@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" role="img" aria-label="Abstract evaluation field">
+  <rect width="1600" height="1000" fill="#dfe6e1"/>
+  <g fill="none" stroke="#1f4f46" stroke-opacity=".16">
+    <path d="M-40 760C242 630 361 271 654 366c266 86 313 389 589 331 181-38 245-195 397-180"/>
+    <path d="M-80 458C217 314 390 563 658 477c228-73 297-292 557-229 208 50 285 222 460 177"/>
+    <path d="M-30 170c273 91 387 248 646 174 213-61 283-250 522-198 188 40 282 181 474 121"/>
+  </g>
+  <g fill="#1f4f46" fill-opacity=".11">
+    <circle cx="1190" cy="291" r="180"/>
+    <circle cx="1320" cy="610" r="110"/>
+    <circle cx="930" cy="632" r="72"/>
+  </g>
+  <g stroke="#8f592b" stroke-opacity=".3">
+    <path d="M1062 172h268M1012 240h420M1100 308h246M972 732h362M1044 798h240"/>
+  </g>
+</svg>

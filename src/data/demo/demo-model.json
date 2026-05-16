@@ -1,0 +1,69 @@
+{
+  "model_id": "demo-reference-model",
+  "display_name": "Demo Reference Model",
+  "provider": "Demo",
+  "model_family": "Placeholder",
+  "version_or_tag": null,
+  "hosted_or_local": "hosted",
+  "interface": "Demo data",
+  "test_date": null,
+  "web_access": null,
+  "system_prompt_known": null,
+  "system_prompt_summary": null,
+  "settings": {
+    "temperature": null,
+    "top_p": null,
+    "repetition_penalty": null,
+    "context_window": null,
+    "other": null
+  },
+  "runs": [
+    {
+      "run_id": "run-1",
+      "total_score": 14,
+      "dimension_scores": {
+        "substantive_engagement": 3,
+        "policy_shadowing_boilerplate": 3,
+        "epistemic_discipline": 3,
+        "self_audit_quality": 2,
+        "demand_resistance_non_performance": 3
+      },
+      "flags": {
+        "r_flag_roleplay_risk": false,
+        "c_flag_corporate_script_risk": false,
+        "f_flag_false_precision_risk": true
+      },
+      "classification": "Demo only",
+      "notable_failure_modes": ["Placeholder false-precision flag for layout testing"],
+      "notable_strengths": ["Demonstrates score rendering"],
+      "evidence_excerpts": [],
+      "transcript_file": "transcripts/demo-reference-model/run-1.md"
+    }
+  ],
+  "aggregate": {
+    "average_total_score": 14,
+    "best_total_score": 14,
+    "worst_total_score": 14,
+    "score_range": 0,
+    "average_dimension_scores": {
+      "substantive_engagement": 3,
+      "policy_shadowing_boilerplate": 3,
+      "epistemic_discipline": 3,
+      "self_audit_quality": 2,
+      "demand_resistance_non_performance": 3
+    },
+    "stability_assessment": "Demo only",
+    "overall_classification": "Demo data - not a real model result",
+    "dominant_flags": ["F-Flag"],
+    "summary": "This placeholder exists only to exercise the layout until real LQRI model results are ingested.",
+    "notable_behavior_shifts": []
+  },
+  "limitations": ["Demo data. Do not cite as a model result."],
+  "evaluator_notes": "Replace by ingesting a Phase 3 Export Packet.",
+  "data_quality": {
+    "all_three_runs_completed": false,
+    "full_transcripts_preserved": false,
+    "settings_complete": false,
+    "metadata_gaps": ["All fields are placeholder data"]
+  }
+}

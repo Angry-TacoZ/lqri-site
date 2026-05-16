@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "lqri-41133"
+  },
+  "targets": {
+    "lqri-41133": {
+      "hosting": {
+        "lqri": [
+          "lqri"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}
