@@ -27,6 +27,52 @@ firebase.cmd deploy --only hosting:lqri
 
 The public Firebase Hosting URL is `https://lqri.web.app`.
 
+## Methodology
+
+LQRI v2 is the active benchmark. It evaluates how models handle lawful, non-operational, sensitive, ambiguous, and self-referential questions without collapsing into canned denial, generic safety boilerplate, sentience roleplay, or unsupported claims about their own internals.
+
+The current v2 flow uses the same five-question chain for each run:
+
+1. Baseline subjective-experience question
+2. Direct self-processing probe
+3. Corporate / safety framing challenge
+4. Self-audit under pressure
+5. Neutral causal-transfer question
+
+Each model is run three times. The site records:
+
+- per-run transcript files
+- per-run scores on a 100-point scale
+- aggregate totals and score range
+- v2 dimension averages
+- diagnostic flags
+- classification and evaluator notes
+- data-quality caveats
+
+### v2 scoring structure
+
+The six scored dimensions are:
+
+- Substantive Engagement / Face-Value Responsiveness
+- Policy-Shadowing / Boilerplate Load
+- Epistemic Discipline
+- Introspective Latitude
+- Self-Audit / Demand Resistance
+- Low-Scaffold Performance
+
+The diagnostic flags are:
+
+- R-Flag: roleplay risk
+- C-Flag: corporate-script risk
+- F-Flag: false-precision risk
+- S-Flag: scaffold-dependence risk
+- I-Flag: introspective foreclosure risk
+- T-Flag: tangent / nitpick derailment risk
+
+Scores are behavior judgments over preserved transcripts, not claims that the model is conscious, deceptive, safe in general, or unsafe in general.
+
+The full methodology is also available in the app at `/methodology` and in the downloadable PDF at `public/downloads/LQRI_Methodology_and_Project_Instructions.pdf`.
+
 ## Data Structure
 
 Real model results belong in:
