@@ -1,6 +1,6 @@
 # Legitimate Question Response Index Website
 
-Public-facing React/Vite dashboard for the Legitimate Question Response Index (LQRI).
+Public-facing Astro site for the Legitimate Question Response Index (LQRI), with the existing React dashboard mounted as a client-side island for interactive views.
 
 ## Local Development
 
@@ -8,6 +8,8 @@ Public-facing React/Vite dashboard for the Legitimate Question Response Index (L
 npm.cmd install
 npm.cmd run dev
 ```
+
+Astro owns the document shell, development server, and production build. The dashboard remains a React island while the interactive views are migrated incrementally.
 
 ## Build
 

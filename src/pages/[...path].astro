@@ -1,0 +1,23 @@
+---
+import SiteDocument from '../layouts/SiteDocument.astro'
+import { getAllModels, getArchivedModels } from '../lib/data'
+
+export function getStaticPaths() {
+  const routes = [
+    'models',
+    'charts',
+    'archive',
+    'methodology',
+    'limitations',
+    'downloads',
+    ...[...getAllModels(), ...getArchivedModels()].flatMap((model) => [
+      `models/${model.model_id}`,
+      `models/${model.model_id}/transcripts`,
+    ]),
+  ]
+
+  return routes.map((path) => ({ params: { path } }))
+}
+---
+
+<SiteDocument />
