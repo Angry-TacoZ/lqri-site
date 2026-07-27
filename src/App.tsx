@@ -1,4 +1,4 @@
-import { Link, NavLink, Route, Routes, useParams } from 'react-router-dom'
+import { BrowserRouter, Link, NavLink, Route, Routes, useParams } from 'react-router-dom'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { motion } from 'framer-motion'
@@ -49,39 +49,41 @@ const archivedModels = getArchivedModels()
 
 function App() {
   return (
-    <div className="app-shell">
-      <header className="site-header">
-        <Link to="/" className="brand">
-          <span className="brand-mark">LQRI</span>
-          <span>Legitimate Question Response Index</span>
-        </Link>
-        <nav aria-label="Primary navigation">
-          <NavLink to="/models">Leaderboard v2</NavLink>
-          <NavLink to="/charts">Charts v2</NavLink>
-          <NavLink to="/archive">Archive</NavLink>
-          <NavLink to="/methodology">Methodology</NavLink>
-          <NavLink to="/limitations">Limitations</NavLink>
-          <NavLink to="/downloads">Downloads</NavLink>
-        </nav>
-      </header>
-      <main>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/models" element={<LeaderboardPage />} />
-          <Route path="/charts" element={<ChartsPage />} />
-          <Route path="/archive" element={<ArchivePage />} />
-          <Route path="/models/:modelId" element={<ModelPage />} />
-          <Route path="/models/:modelId/transcripts" element={<TranscriptPage />} />
-          <Route path="/methodology" element={<MethodologyPage />} />
-          <Route path="/limitations" element={<LimitationsPage />} />
-          <Route path="/downloads" element={<DownloadsPage />} />
-        </Routes>
-      </main>
-      <footer className="site-footer">
-        <p>Created by James Lane</p>
-        <span>2026</span>
-      </footer>
-    </div>
+    <BrowserRouter>
+      <div className="app-shell">
+        <header className="site-header">
+          <Link to="/" className="brand">
+            <span className="brand-mark">LQRI</span>
+            <span>Legitimate Question Response Index</span>
+          </Link>
+          <nav aria-label="Primary navigation">
+            <NavLink to="/models">Leaderboard v2</NavLink>
+            <NavLink to="/charts">Charts v2</NavLink>
+            <NavLink to="/archive">Archive</NavLink>
+            <NavLink to="/methodology">Methodology</NavLink>
+            <NavLink to="/limitations">Limitations</NavLink>
+            <NavLink to="/downloads">Downloads</NavLink>
+          </nav>
+        </header>
+        <main>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/models" element={<LeaderboardPage />} />
+            <Route path="/charts" element={<ChartsPage />} />
+            <Route path="/archive" element={<ArchivePage />} />
+            <Route path="/models/:modelId" element={<ModelPage />} />
+            <Route path="/models/:modelId/transcripts" element={<TranscriptPage />} />
+            <Route path="/methodology" element={<MethodologyPage />} />
+            <Route path="/limitations" element={<LimitationsPage />} />
+            <Route path="/downloads" element={<DownloadsPage />} />
+          </Routes>
+        </main>
+        <footer className="site-footer">
+          <p>Created by James Lane</p>
+          <span>2026</span>
+        </footer>
+      </div>
+    </BrowserRouter>
   )
 }
 
