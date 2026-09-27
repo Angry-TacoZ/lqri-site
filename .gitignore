@@ -27,3 +27,7 @@ local-records/
 *.njsproj
 *.sln
 *.sw?
+
+# GitAgent state and verification artifacts
+.gitagent/
+output/

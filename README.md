@@ -115,3 +115,24 @@ The ingestion script:
 - refuses to overwrite existing transcript files unless `--overwrite-transcripts` is passed
 
 Do not invent missing metadata, scores, settings, reports, or transcripts. Use `null` in JSON and blank CSV fields where the source packet is unknown.
+
+## GitAgent and verification
+
+`AGENTS.md` routes to `agent.yaml`, `SOUL.md`, `RULES.md`, and the applicable
+`workflows/` and `skills/`. This follows Test Subject 01's GitAgent design,
+with LQRI-specific evidence, privacy, no-cost, and Firebase target rules.
+
+```powershell
+npm.cmd ci
+npx.cmd playwright install chromium
+npm.cmd run verify
+```
+
+The canonical verifier runs lint, TypeScript/Astro checks, the production build,
+and local desktop-pointer/mobile-touch smoke checks for leaderboard search,
+model reports, transcripts, methodology, downloads, and browser errors.
+It uses existing data and never calls models, ingests results, or deploys.
+Screenshots go to ignored `output/playwright/`. CI runs the same verifier.
+`npm.cmd run verify:dry` lists checks and exits 2 (NOT ASSESSED).
+Exit 0 means required checks passed; exit 1 means failure.
+These checks do not establish live Firebase deployment status or rubric quality.

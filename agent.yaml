@@ -1,0 +1,9 @@
+spec_version: "0.1.0"
+name: lqri-site
+version: 0.1.0
+description: Engineering agent for James's LQRI repository.
+skills:
+  - api-integration-security
+  - interaction-usability
+  - security-relevant-change
+  - visual-diagnosis

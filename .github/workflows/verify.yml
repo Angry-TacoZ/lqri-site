@@ -21,8 +21,8 @@ jobs:
       - name: Install dependencies
         run: npm.cmd ci
 
-      - name: Lint
-        run: npm.cmd run lint
+      - name: Install browser
+        run: npx.cmd playwright install chromium
 
-      - name: Build and type-check
-        run: npm.cmd run build
+      - name: Verify
+        run: npm.cmd run verify

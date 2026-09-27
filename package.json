@@ -8,7 +8,10 @@
     "build": "tsc -b && astro check && astro build",
     "ingest": "node scripts/ingest-phase3-packet.mjs",
     "lint": "eslint .",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "smoke": "node scripts/smoke-site.mjs",
+    "verify": "node scripts/verify-project.mjs",
+    "verify:dry": "node scripts/verify-project.mjs --dry-run"
   },
   "dependencies": {
     "framer-motion": "^12.38.0",
