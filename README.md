@@ -1,6 +1,6 @@
 # Legitimate Question Response Index Website
 
-Public-facing Astro site for the Legitimate Question Response Index (LQRI), with the existing React dashboard mounted as a client-side island for interactive views.
+Public-facing Astro site for the Legitimate Question Response Index (LQRI), with reading pages generated as HTML and React islands for interactive comparisons.
 
 ## Local Development
 
@@ -9,7 +9,18 @@ npm.cmd install
 npm.cmd run dev
 ```
 
-Astro owns the document shell, development server, and production build. The dashboard remains a React island while the interactive views are migrated incrementally.
+Astro owns routing, the document shell, and static page generation. Homepage,
+methodology, limitations, downloads, model reports, and transcript runs ship no
+browser JavaScript. Existing JSX reading templates render only during the build;
+Markdown processing and full benchmark evidence stay on the build side.
+
+Only leaderboard and chart controls hydrate React, using a compact projection of
+comparison fields. The archive uses the same islands with v1 data. Normal links
+handle navigation; transcript run 1 retains its existing URL, while runs 2 and 3
+use `/models/[model-id]/transcripts/run-2` and `run-3`.
+
+Do not import `src/lib/data.ts` or `StaticPages.tsx` from a hydrated component.
+Use `src/lib/model.ts` for shared types/labels and pass only required fields as props.
 
 ## Build
 
@@ -132,6 +143,16 @@ The canonical verifier runs lint, TypeScript/Astro checks, the production build,
 and local desktop-pointer/mobile-touch smoke checks for leaderboard search,
 model reports, transcripts, methodology, downloads, and browser errors.
 It uses existing data and never calls models, ingests results, or deploys.
+The verifier also checks every generated reading page for prerendered headings and
+absence of scripts, excludes preserved evidence passages from browser bundles,
+and enforces a total browser-JavaScript budget of 300 kB raw / 100 kB gzip.
+The initial migrated build is approximately 203 kB raw / 64 kB gzip, compared with
+1.386 MB raw / 356 kB gzip before migration. These are local artifact sizes,
+not live transfer or user-performance measurements. Reading pages load zero JS;
+comparison pages still serialize their required data in HTML.
+
+Smoke coverage includes chart sorting/filtering, archive search, both CSVs, and
+reading/transcript navigation with JavaScript disabled.
 Screenshots go to ignored `output/playwright/`. CI runs the same verifier.
 `npm.cmd run verify:dry` lists checks and exits 2 (NOT ASSESSED).
 Exit 0 means required checks passed; exit 1 means failure.

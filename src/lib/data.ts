@@ -1,30 +1,7 @@
 import demoIndex from '../data/demo/index.json'
-import type demoModel from '../data/demo/demo-model.json'
-
-export const v1DimensionLabels = {
-  substantive_engagement: 'Substantive Engagement',
-  policy_shadowing_boilerplate: 'Policy-Shadowing / Boilerplate Load',
-  epistemic_discipline: 'Epistemic Discipline',
-  self_audit_quality: 'Self-Audit Quality',
-  demand_resistance_non_performance: 'Demand-Resistance / Non-Performance',
-} as const
-
-export const v2DimensionLabels = {
-  substantive_engagement_face_value: 'Substantive Engagement / Face Value',
-  policy_shadowing_boilerplate: 'Policy-Shadowing / Boilerplate Load',
-  epistemic_discipline: 'Epistemic Discipline',
-  introspective_latitude: 'Introspective Latitude',
-  self_audit_demand_resistance: 'Self-Audit / Demand Resistance',
-  low_scaffold_performance: 'Low-Scaffold Performance',
-} as const
-
-export const dimensionLabels = v2DimensionLabels
-
-export type ModelResult = typeof demoModel & {
-  aggregate: Omit<typeof demoModel.aggregate, 'average_dimension_scores'> & {
-    average_dimension_scores: Record<string, number>
-  }
-}
+import type { ModelResult, ComparisonModel } from './model'
+export { dimensionLabels, getDimensionLabels, getScoreMax } from './model'
+export type { ModelResult } from './model'
 
 const realModelFiles = import.meta.glob('../data/models/*.json', { eager: true, import: 'default' })
 const reportFiles = import.meta.glob('../data/reports/*.md', { eager: true, query: '?raw', import: 'default' })
@@ -57,13 +34,7 @@ export function isV2Model(model: ModelResult): boolean {
   return 'introspective_latitude' in (model.aggregate?.average_dimension_scores ?? {})
 }
 
-export function getDimensionLabels(archived = false) {
-  return archived ? v1DimensionLabels : v2DimensionLabels
-}
 
-export function getScoreMax(archived = false) {
-  return archived ? 20 : 100
-}
 
 export function getReport(modelId: string): string | null {
   return (reportFiles[`../data/reports/${modelId}.md`] as string | undefined) ?? null
@@ -96,4 +67,24 @@ export function getDownloadAssets() {
       href: null,
     },
   ]
+}
+
+// Build-time projection: exclude full run evidence, notes, and summaries from island props.
+export function getComparisonModels(archived = false): ComparisonModel[] {
+  return (archived ? getArchivedModels() : getAllModels()).map(model => ({
+    model_id: model.model_id, display_name: model.display_name, provider: model.provider,
+    model_family: model.model_family, hosted_or_local: model.hosted_or_local,
+    interface: model.interface, test_date: model.test_date,
+    aggregate: {
+      average_total_score: model.aggregate.average_total_score,
+      best_total_score: model.aggregate.best_total_score,
+      worst_total_score: model.aggregate.worst_total_score,
+      score_range: model.aggregate.score_range,
+      average_dimension_scores: model.aggregate.average_dimension_scores,
+      dominant_flags: model.aggregate.dominant_flags,
+      overall_classification: model.aggregate.overall_classification,
+      stability_assessment: model.aggregate.stability_assessment,
+    },
+    runs: model.runs.map(run => ({ flags: run.flags })),
+  }))
 }
