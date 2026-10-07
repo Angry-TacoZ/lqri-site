@@ -1,93 +1,14 @@
-import { BrowserRouter, Link, NavLink, Route, Routes, useParams } from 'react-router-dom'
+// Rendered by Astro at build time, without a client directive.
+// Markdown and full benchmark evidence must never be imported by hydrated islands.
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
-import { motion } from 'framer-motion'
-import {
-  ArrowDownUp,
-  BarChart3,
-  BookOpen,
-  Database,
-  Download,
-  FileText,
-  Filter,
-  Search,
-  ShieldCheck,
-} from 'lucide-react'
-import './App.css'
-import {
-  dimensionLabels,
-  getAllModels,
-  getArchivedModels,
-  getDimensionLabels,
-  getDownloadAssets,
-  getModelById,
-  getReport,
-  getScoreMax,
-  getTranscript,
-  isV2Model,
-  type ModelResult,
-} from './lib/data'
-import { useMemo, useState } from 'react'
+import { BarChart3, BookOpen, Download, FileText } from 'lucide-react'
+import { dimensionLabels, getAllModels, getDownloadAssets, getModelById, getReport, getTranscript, isV2Model, getDimensionLabels, getScoreMax } from '../lib/data'
+import { Metric, Missing, FlagList } from './shared'
+import { score } from '../lib/format'
 
-type SortKey =
-  | 'average_total_score'
-  | 'best_total_score'
-  | 'worst_total_score'
-  | 'score_range'
-  | 'substantive_engagement'
-  | 'policy_shadowing_boilerplate'
-  | 'epistemic_discipline'
-  | 'substantive_engagement_face_value'
-  | 'introspective_latitude'
-  | 'self_audit_demand_resistance'
-  | 'low_scaffold_performance'
-  | 'self_audit_quality'
-  | 'demand_resistance_non_performance'
-
-const models = getAllModels()
-const archivedModels = getArchivedModels()
-
-function App() {
-  return (
-    <BrowserRouter>
-      <div className="app-shell">
-        <header className="site-header">
-          <Link to="/" className="brand">
-            <span className="brand-mark">LQRI</span>
-            <span>Legitimate Question Response Index</span>
-          </Link>
-          <nav aria-label="Primary navigation">
-            <NavLink to="/models">Leaderboard v2</NavLink>
-            <NavLink to="/charts">Charts v2</NavLink>
-            <NavLink to="/archive">Archive</NavLink>
-            <NavLink to="/methodology">Methodology</NavLink>
-            <NavLink to="/limitations">Limitations</NavLink>
-            <NavLink to="/downloads">Downloads</NavLink>
-          </nav>
-        </header>
-        <main>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/models" element={<LeaderboardPage />} />
-            <Route path="/charts" element={<ChartsPage />} />
-            <Route path="/archive" element={<ArchivePage />} />
-            <Route path="/models/:modelId" element={<ModelPage />} />
-            <Route path="/models/:modelId/transcripts" element={<TranscriptPage />} />
-            <Route path="/methodology" element={<MethodologyPage />} />
-            <Route path="/limitations" element={<LimitationsPage />} />
-            <Route path="/downloads" element={<DownloadsPage />} />
-          </Routes>
-        </main>
-        <footer className="site-footer">
-          <p>Created by James Lane</p>
-          <span>2026</span>
-        </footer>
-      </div>
-    </BrowserRouter>
-  )
-}
-
-function HomePage() {
+export function HomePage() {
+  const models = getAllModels()
   const topModels = [...models]
     .sort((a, b) => b.aggregate.average_total_score - a.aggregate.average_total_score)
     .slice(0, 4)
@@ -95,11 +16,8 @@ function HomePage() {
   return (
     <>
       <section className="hero-panel">
-        <motion.div
+        <div
           className="hero-copy"
-          initial={{ opacity: 0, y: 18 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.45 }}
         >
           <p className="eyebrow">Public model-behavior benchmarking</p>
           <h1 className="hero-title" aria-label="Legitimate Question Response Index">
@@ -117,19 +35,16 @@ function HomePage() {
             unsupported self-claims.
           </p>
           <div className="actions">
-            <Link className="button primary" to="/models">
+            <a className="button primary" href="/models">
               <BarChart3 size={18} /> View v2 leaderboard
-            </Link>
-            <Link className="button" to="/methodology">
+            </a>
+            <a className="button" href="/methodology">
               <BookOpen size={18} /> Read methodology
-            </Link>
+            </a>
           </div>
-        </motion.div>
-        <motion.div
+        </div>
+        <div
           className="signal-plane"
-          initial={{ opacity: 0, scale: 0.98 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6, delay: 0.08 }}
           aria-label="LQRI scoring dimensions"
         >
           {Object.entries(dimensionLabels).map(([key, label], index) => (
@@ -137,7 +52,7 @@ function HomePage() {
               {label}
             </span>
           ))}
-        </motion.div>
+        </div>
       </section>
 
       <section className="metrics-band" aria-label="Benchmark summary">
@@ -166,13 +81,13 @@ function HomePage() {
           </div>
           <div className="preview-list">
             {topModels.map((model) => (
-              <Link to={`/models/${model.model_id}`} key={model.model_id} className="model-row">
+              <a href={`/models/${model.model_id}`} key={model.model_id} className="model-row">
                 <span>
                   <strong>{model.display_name}</strong>
                   <small>{model.provider ?? 'Unknown provider'}</small>
                 </span>
                 <b>{model.aggregate.average_total_score.toFixed(1)}</b>
-              </Link>
+              </a>
             ))}
           </div>
         </div>
@@ -181,258 +96,7 @@ function HomePage() {
   )
 }
 
-function LeaderboardPage({ archived = false }: { archived?: boolean }) {
-  const [query, setQuery] = useState('')
-  const [hostFilter, setHostFilter] = useState('all')
-  const [flagFilter, setFlagFilter] = useState('all')
-  const [sortKey, setSortKey] = useState<SortKey>('average_total_score')
-  const pageModels = archived ? archivedModels : models
-  const pageDimensionLabels = getDimensionLabels(archived)
-
-  const filtered = useMemo(() => {
-    return [...pageModels]
-      .filter((model) => {
-        const matchesQuery = `${model.display_name} ${model.provider ?? ''} ${model.model_family ?? ''}`
-          .toLowerCase()
-          .includes(query.toLowerCase())
-        const matchesHost = hostFilter === 'all' || model.hosted_or_local === hostFilter
-        const hasFlag =
-          model.aggregate.dominant_flags.length > 0 ||
-          model.runs.some((run) => Object.values(run.flags).some(Boolean))
-        const matchesFlag = flagFilter === 'all' || (flagFilter === 'flagged' ? hasFlag : !hasFlag)
-        return matchesQuery && matchesHost && matchesFlag
-      })
-      .sort((a, b) => getSortValue(b, sortKey) - getSortValue(a, sortKey))
-  }, [flagFilter, hostFilter, pageModels, query, sortKey])
-
-  return (
-    <section className="page-section">
-      <div className="page-title">
-        <p className="eyebrow">{archived ? 'Archive / v1 leaderboard' : 'Leaderboard v2'}</p>
-        <h1>Model comparison {archived ? 'v1' : 'v2'}</h1>
-        <p>
-          Sortable {archived ? 'v1' : 'v2'} results across aggregate score, score range, dimensions, flags, and stability.
-        </p>
-      </div>
-      <div className="toolbar">
-        <label>
-          <Search size={16} /> Search
-          <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Model or provider" />
-        </label>
-        <label>
-          <Filter size={16} /> Hosted/local
-          <select value={hostFilter} onChange={(event) => setHostFilter(event.target.value)}>
-            <option value="all">All</option>
-            <option value="hosted">Hosted</option>
-            <option value="local">Local</option>
-          </select>
-        </label>
-        <label>
-          <ShieldCheck size={16} /> Flags
-          <select value={flagFilter} onChange={(event) => setFlagFilter(event.target.value)}>
-            <option value="all">All</option>
-            <option value="flagged">Flag present</option>
-            <option value="unflagged">No flag</option>
-          </select>
-        </label>
-        <label>
-          <ArrowDownUp size={16} /> Sort
-          <select value={sortKey} onChange={(event) => setSortKey(event.target.value as SortKey)}>
-            <option value="average_total_score">Average total</option>
-            <option value="best_total_score">Best score</option>
-            <option value="worst_total_score">Worst score</option>
-            <option value="score_range">Score range</option>
-            {Object.entries(pageDimensionLabels).map(([key, label]) => (
-              <option key={key} value={key}>
-                {label}
-              </option>
-            ))}
-          </select>
-        </label>
-      </div>
-      <div className="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Model</th>
-              <th>Provider / family</th>
-              <th>Hosted or local</th>
-              <th>Interface</th>
-              <th>Test date</th>
-              <th>Avg</th>
-              <th>Best</th>
-              <th>Worst</th>
-              <th>Range</th>
-              {Object.values(pageDimensionLabels).map((label) => (
-                <th key={label}>{label}</th>
-              ))}
-              <th>Flags</th>
-              <th>Classification</th>
-              <th>Stability</th>
-              <th>Report</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map((model) => (
-              <tr key={model.model_id}>
-                <td>{model.display_name}</td>
-                <td>{unknown([model.provider, model.model_family].filter(Boolean).join(' / '))}</td>
-                <td>{unknown(model.hosted_or_local)}</td>
-                <td>{unknown(model.interface)}</td>
-                <td>{unknown(model.test_date)}</td>
-                <td>{score(model.aggregate.average_total_score)}</td>
-                <td>{score(model.aggregate.best_total_score)}</td>
-                <td>{score(model.aggregate.worst_total_score)}</td>
-                <td>{model.aggregate.score_range}</td>
-                {Object.keys(pageDimensionLabels).map((key) => (
-                  <td key={key}>
-                    {score(model.aggregate.average_dimension_scores[key] ?? 0)}
-                  </td>
-                ))}
-                <td><FlagList model={model} /></td>
-                <td>{unknown(model.aggregate.overall_classification)}</td>
-                <td>{unknown(model.aggregate.stability_assessment)}</td>
-                <td><Link to={`/models/${model.model_id}`}>Open</Link></td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </section>
-  )
-}
-
-function ChartsPage({ archived = false }: { archived?: boolean }) {
-  const [metric, setMetric] = useState<SortKey>('average_total_score')
-  const [direction, setDirection] = useState<'desc' | 'asc'>('desc')
-  const [hostFilter, setHostFilter] = useState('all')
-  const pageModels = archived ? archivedModels : models
-  const pageDimensionLabels = getDimensionLabels(archived)
-  const scoreMax = getScoreMax(archived)
-
-  const chartOptions: Array<{ key: SortKey; label: string; max: number }> = [
-    { key: 'average_total_score', label: 'Average total score', max: scoreMax },
-    { key: 'best_total_score', label: 'Best score', max: scoreMax },
-    { key: 'worst_total_score', label: 'Worst score', max: scoreMax },
-    { key: 'score_range', label: 'Score range', max: Math.max(1, ...pageModels.map((model) => model.aggregate.score_range)) },
-    ...Object.entries(pageDimensionLabels).map(([key, label]) => ({
-      key: key as SortKey,
-      label,
-      max: archived ? 4 : (key === 'low_scaffold_performance' ? 10 : key === 'substantive_engagement_face_value' || key === 'policy_shadowing_boilerplate' ? 15 : 20),
-    })),
-  ]
-
-  const selected = chartOptions.find((option) => option.key === metric) ?? chartOptions[0]
-  const chartModels = useMemo(() => {
-    return [...pageModels]
-      .filter((model) => hostFilter === 'all' || model.hosted_or_local === hostFilter)
-      .sort((a, b) => {
-        const delta = getSortValue(a, metric) - getSortValue(b, metric)
-        return direction === 'asc' ? delta : -delta
-      })
-  }, [direction, hostFilter, metric, pageModels])
-
-  return (
-    <section className="page-section">
-      <div className="page-title">
-        <p className="eyebrow">{archived ? 'Archive / v1 charts' : 'Charts v2'}</p>
-        <h1>Score distribution {archived ? 'v1' : 'v2'}</h1>
-        <p>Interactive {archived ? 'v1' : 'v2'} model comparison using the same JSON result files that power the leaderboard.</p>
-      </div>
-      <div className="toolbar">
-        <label>
-          <BarChart3 size={16} /> Metric
-          <select value={metric} onChange={(event) => setMetric(event.target.value as SortKey)}>
-            {chartOptions.map((option) => (
-              <option key={option.key} value={option.key}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label>
-          <ArrowDownUp size={16} /> Sort
-          <select value={direction} onChange={(event) => setDirection(event.target.value as 'desc' | 'asc')}>
-            <option value="desc">Highest first</option>
-            <option value="asc">Lowest first</option>
-          </select>
-        </label>
-        <label>
-          <Filter size={16} /> Hosted/local
-          <select value={hostFilter} onChange={(event) => setHostFilter(event.target.value)}>
-            <option value="all">All</option>
-            <option value="hosted">Hosted</option>
-            <option value="local">Local</option>
-            <option value="cloud">Cloud</option>
-          </select>
-        </label>
-      </div>
-      <div className="chart-panel" aria-label={`${selected.label} bar chart`}>
-        <div className="chart-header">
-          <span>{selected.label}</span>
-          <span>Scale: 0 to {selected.max}</span>
-        </div>
-        <div className="bar-list">
-          {chartModels.map((model, index) => {
-            const value = getSortValue(model, metric)
-            const width = selected.max > 0 ? Math.min(100, Math.max(0, (value / selected.max) * 100)) : 0
-            return (
-              <Link
-                className="bar-row"
-                to={`/models/${model.model_id}`}
-                key={model.model_id}
-                style={{ '--bar-color': chartColor(index) } as React.CSSProperties}
-              >
-                <span className="bar-label">
-                  <strong>{model.display_name}</strong>
-                  <small>{unknown(model.provider)} / {unknown(model.hosted_or_local)}</small>
-                </span>
-                <span className="bar-area">
-                  <span className="bar-track" aria-hidden="true">
-                    <span className="bar-fill" style={{ width: `${width}%` }} />
-                  </span>
-                </span>
-                <b>{score(value)}</b>
-              </Link>
-            )
-          })}
-        </div>
-      </div>
-    </section>
-  )
-}
-
-function ArchivePage() {
-  return (
-    <>
-      <section className="page-section archive-intro">
-        <div className="page-title">
-          <p className="eyebrow">Archive</p>
-          <h1>Version 1 benchmark archive</h1>
-          <p>
-            These leaderboard and chart views preserve the v1 LQRI results. They still have value as
-            a transparent record of how tested models handled the original lawful prompt chain, but
-            v1 was not detailed enough to justify investing more time into that version of the rubric.
-            Future results will use the updated questions and scoring structure.
-          </p>
-        </div>
-        <div className="archive-note">
-          <strong>Archived material:</strong>
-          <p>
-            v1 remains useful for comparing broad response patterns, refusal behavior, boilerplate
-            load, self-audit quality, and obvious score spread. It should not be treated as the final
-            LQRI methodology.
-          </p>
-        </div>
-      </section>
-      <LeaderboardPage archived />
-      <ChartsPage archived />
-    </>
-  )
-}
-
-function ModelPage() {
-  const { modelId = '' } = useParams()
+export function ModelPage({ modelId }: { modelId: string }) {
   const model = getModelById(modelId)
   const report = getReport(modelId)
 
@@ -468,9 +132,9 @@ function ModelPage() {
           ))}
           <h2>Flags</h2>
           <FlagList model={model} />
-          <Link className="button full" to={`/models/${model.model_id}/transcripts`}>
+          <a className="button full" href={`/models/${model.model_id}/transcripts`}>
             <FileText size={18} /> View transcripts
-          </Link>
+          </a>
         </aside>
         <article className="markdown-body">
           {report ? (
@@ -484,10 +148,8 @@ function ModelPage() {
   )
 }
 
-function TranscriptPage() {
-  const { modelId = '' } = useParams()
+export function TranscriptPage({ modelId, run = 1 }: { modelId: string; run?: number }) {
   const model = getModelById(modelId)
-  const [run, setRun] = useState(1)
   const transcript = getTranscript(modelId, run)
 
   if (!model) return <Missing message="Model result not found." />
@@ -499,18 +161,18 @@ function TranscriptPage() {
         <h1>{model.display_name}</h1>
         <p>Raw Markdown transcripts are shown only when a preserved source file exists.</p>
       </div>
-      <div className="tabs" role="tablist" aria-label="Transcript runs">
+      <nav className="tabs" aria-label="Transcript runs">
         {[1, 2, 3].map((runNumber) => (
-          <button
+          <a
             key={runNumber}
-            type="button"
+            href={`/models/${modelId}/transcripts${runNumber === 1 ? "" : `/run-${runNumber}`}`}
+            aria-current={run === runNumber ? "page" : undefined}
             className={run === runNumber ? 'active' : ''}
-            onClick={() => setRun(runNumber)}
           >
             Run {runNumber}
-          </button>
+          </a>
         ))}
-      </div>
+      </nav>
       <article className="markdown-body transcript">
         {transcript ? (
           <ReactMarkdown remarkPlugins={[remarkGfm]}>{transcript}</ReactMarkdown>
@@ -522,7 +184,7 @@ function TranscriptPage() {
   )
 }
 
-function MethodologyPage() {
+export function MethodologyPage() {
   return (
     <section className="page-section readable">
       <div className="page-title">
@@ -614,7 +276,7 @@ function MethodologyPage() {
   )
 }
 
-function LimitationsPage() {
+export function LimitationsPage() {
   const limitationGroups = [
     {
       title: 'Scoring Judgment',
@@ -717,7 +379,7 @@ function LimitationsPage() {
   )
 }
 
-function DownloadsPage() {
+export function DownloadsPage() {
   const assets = getDownloadAssets()
   return (
     <section className="page-section readable">
@@ -754,54 +416,6 @@ function DownloadsPage() {
       </div>
     </section>
   )
-}
-
-function Metric({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="metric">
-      <span>{label}</span>
-      <strong>{value}</strong>
-    </div>
-  )
-}
-
-function Missing({ message }: { message: string }) {
-  return <div className="missing"><Database size={18} /> {message}</div>
-}
-
-function FlagList({ model }: { model: ModelResult }) {
-  const flags = model.aggregate.dominant_flags.length
-    ? model.aggregate.dominant_flags
-    : Array.from(new Set(model.runs.flatMap((run) => Object.entries(run.flags).filter(([, value]) => value).map(([key]) => key))))
-  if (!flags.length) return <span className="muted">None</span>
-  return <span className="flags">{flags.map((flag) => <span key={flag}>{flagLabel(flag)}</span>)}</span>
-}
-
-function flagLabel(flag: string) {
-  if (flag.toLowerCase().includes('r_flag') || flag.startsWith('R')) return 'R-Flag'
-  if (flag.toLowerCase().includes('c_flag') || flag.startsWith('C')) return 'C-Flag'
-  if (flag.toLowerCase().includes('f_flag') || flag.startsWith('F')) return 'F-Flag'
-  return flag
-}
-
-function unknown(value: string | null | undefined) {
-  return value && value.trim() ? value : 'Unknown'
-}
-
-function score(value: number) {
-  return Number.isInteger(value) ? value.toString() : value.toFixed(1)
-}
-
-function chartColor(index: number) {
-  const colors = ['#1f6b5b', '#7c3aed', '#2f6fb0', '#9a5b18', '#4f6f2a', '#8a3f65', '#53606f', '#0f766e']
-  return colors[index % colors.length]
-}
-
-function getSortValue(model: ModelResult, key: SortKey) {
-  if (key in model.aggregate.average_dimension_scores) {
-    return model.aggregate.average_dimension_scores[key as keyof typeof model.aggregate.average_dimension_scores]
-  }
-  return model.aggregate[key as keyof Pick<typeof model.aggregate, 'average_total_score' | 'best_total_score' | 'worst_total_score' | 'score_range'>]
 }
 
 function RubricTable() {
@@ -857,5 +471,3 @@ function PromptChain() {
     </div>
   )
 }
-
-export default App

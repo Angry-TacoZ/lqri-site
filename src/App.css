@@ -603,7 +603,7 @@ th {
   margin-bottom: 16px;
 }
 
-.tabs button {
+.tabs a {
   min-height: 40px;
   padding: 9px 14px;
   border: 1px solid rgba(31, 79, 70, 0.22);
@@ -613,7 +613,7 @@ th {
   font-weight: 760;
 }
 
-.tabs button.active {
+.tabs a.active {
   color: #fffaf1;
   background: #1f4f46;
 }
@@ -713,3 +713,11 @@ code {
     font-size: 3rem;
   }
 }
+
+.tabs a { text-decoration: none; }
+@media (prefers-reduced-motion: no-preference) {
+  .hero-copy { animation: hero-copy-in 450ms ease both; }
+  .signal-plane { animation: signal-in 600ms ease 80ms both; }
+}
+@keyframes hero-copy-in { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes signal-in { from { opacity: 0; transform: scale(.98); } to { opacity: 1; transform: scale(1); } }

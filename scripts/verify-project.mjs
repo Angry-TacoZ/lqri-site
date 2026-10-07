@@ -18,6 +18,7 @@ const buildCheck = isWindows
 const checks = [
   { name: "lint", command: isWindows ? (process.env.ComSpec ?? "cmd.exe") : "npm", args: isWindows ? ["/d", "/s", "/c", "npm.cmd run lint"] : ["run", "lint"] },
   buildCheck,
+  { name: "static content and browser JS budget", command: process.execPath, args: ["scripts/verify-static.mjs"] },
   {
     name: "desktop and mobile browser smoke",
     command: process.execPath,

@@ -1,21 +1,33 @@
 ---
-import App from '../App.tsx'
 import '../index.css'
+import '../App.css'
+interface Props { title?: string }
+const { title = 'LQRI | Legitimate Question Response Index' } = Astro.props
+const path = Astro.url.pathname.replace(/\/$/, '') || '/'
+const links = [
+  ['/models', 'Leaderboard v2'], ['/charts', 'Charts v2'], ['/archive', 'Archive'],
+  ['/methodology', 'Methodology'], ['/limitations', 'Limitations'], ['/downloads', 'Downloads'],
+]
 ---
-
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <meta
-      name="description"
-      content="LQRI benchmarks how language models handle legitimate, sensitive, ambiguous, and self-referential questions."
-    />
+    <meta name="description" content="LQRI benchmarks how language models handle legitimate, sensitive, ambiguous, and self-referential questions." />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <title>LQRI | Legitimate Question Response Index</title>
+    <title>{title}</title>
   </head>
   <body>
-    <App client:only="react" />
+    <div class="app-shell">
+      <header class="site-header">
+        <a href="/" class="brand"><span class="brand-mark">LQRI</span><span>Legitimate Question Response Index</span></a>
+        <nav aria-label="Primary navigation">
+          {links.map(([href, label]) => <a href={href} class:list={{ active: path === href || path.startsWith(href + '/') }} aria-current={path === href ? 'page' : undefined}>{label}</a>)}
+        </nav>
+      </header>
+      <main><slot /></main>
+      <footer class="site-footer"><p>Created by James Lane</p><span>2026</span></footer>
+    </div>
   </body>
 </html>
