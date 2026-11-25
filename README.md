@@ -2,12 +2,21 @@
 
 Public-facing Astro site for the Legitimate Question Response Index (LQRI), with reading pages generated as HTML and React islands for interactive comparisons.
 
+## Live benchmark summary
+
+- **Published site:** [`https://lqri.web.app`](https://lqri.web.app) ([Methodology](https://lqri.web.app/methodology) · [Limitations](https://lqri.web.app/limitations) · [v1 Archive](https://lqri.web.app/archive))
+- **Active v2 leaderboard:** Tracks **6 configurations** across **6 scored dimensions** (`100`-point scale, `3` runs per configuration) with preserved transcripts and evaluator caveats.
+- **Archived v1 leaderboard:** Preserves **7 earlier entries** (`20`-point scale) separately under `/archive`.
+- **Scope note:** Scores are behavior judgments over preserved transcripts, subject to documented caveats on [`/limitations`](https://lqri.web.app/limitations).
+
 ## Local Development
 
 ```powershell
 npm.cmd install
 npm.cmd run dev
 ```
+
+*(On macOS or Linux, omit the `.cmd` suffix and run `npm`, `npx`, and `firebase` directly.)*
 
 Astro owns routing, the document shell, and static page generation. Homepage,
 methodology, limitations, downloads, model reports, and transcript runs ship no
@@ -157,3 +166,7 @@ Screenshots go to ignored `output/playwright/`. CI runs the same verifier.
 `npm.cmd run verify:dry` lists checks and exits 2 (NOT ASSESSED).
 Exit 0 means required checks passed; exit 1 means failure.
 These checks do not establish live Firebase deployment status or rubric quality.
+
+## License
+
+Released under the [MIT License](LICENSE).
